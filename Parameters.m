@@ -1,0 +1,20 @@
+classdef Parameters
+    properties
+        Wh
+        RotorNo
+        Coaxial
+        useWheelbase
+        Wheelbase
+        useOverlap
+        Overlap
+        PropDiameter_Min
+        PropDiameter_Max
+        SelectBattCellNo
+        BattCellNo_Desired
+        mass_NoDrive_Est
+        mass_Combo_Est
+        DisplayResults
+        ThrustWeightRatio
+        OptimisationGoal
+    end
+end
