@@ -41,7 +41,7 @@ function output = multirotorSizingAlgorithm(p)
     end
     
     mass_Combo_Est = p.mass_Combo_Est;
-    mass_Battery_Total = BattCapacity_Wh*4.992 + 242; % TODO: Cite
+    mass_Battery_Total = BattCapacity_Wh*5.0782 + 130.88; % See batteryMassModel.m
     mass_NoDrive_Est = p.mass_NoDrive_Est;
     mass_Total_Est = mass_NoDrive_Est + RotorNo*mass_Combo_Est + mass_Battery_Total;
 
@@ -82,7 +82,7 @@ function output = multirotorSizingAlgorithm(p)
 
     %% Determine battery specification, total mass
     BattCellVoltage = 3.7; % V per cell, battery cell voltage
-    BattCellNo = comboChosen.voltage/3.85; %TODO: FIX THE 3.85
+    BattCellNo = round(comboChosen.voltage/3.85); %TODO: FIX THE 3.85
     BattVoltageSagConstant = 0.5/0.8*BattCellNo;
     BattCapacity_Ah = BattCapacity_Wh/(BattCellNo*3.7);
     minBattRating = comboChosen.powerMax/comboChosen.voltage*RotorNo*SafetyFactor/BattCapacity_Ah;
@@ -149,8 +149,7 @@ function output = multirotorSizingAlgorithm(p)
 %             ' Nm at ' num2str(round(comboChosen.speedMax/100)*100) ' RPM) to achieve ' num2str(round(comboChosen.thrustMax*RotorNo)) ' gf of total thrust.']);
         disp(['This configuration should achieve around ' num2str(round(time_hover(end)*60)) ' min of hover and around ' num2str(round(time_max(end)*60)) ' min of flight at WOT.']);
         disp('---------');
-        % plot_propPerf; % plot propeller performance & battery simulation results 
-        % plot_motorPerf; % plot motor performance % TODO FIXME
+
     end
 
     function filteredComboList = filterComboList(comboList, PDmin, PDmax, Mmax)

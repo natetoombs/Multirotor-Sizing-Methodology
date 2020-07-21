@@ -13,7 +13,7 @@ function comboOPList = getOperatingPoints(comboList, thrustHover, thrustMax, Bat
                 powerHover = interp1(specs(j).RPM, specs(j).Power, speedHover); % Eq. (13)
                 powerMax = interp1(specs(j).RPM, specs(j).Power, speedMax);
                 powerLimit = interp1(specs(j).RPM, specs(j).Power, speedLimit);
-                if powerHover < powerHover_prev && (BattCellNo == 0 || BattCellNo*3.85 == specs(j).Voltage)
+                if powerHover < powerHover_prev && (BattCellNo == 0 || BattCellNo == round(specs(j).Voltage/3.85))
                     powerHover_prev = powerHover;
                     comboList(i).powerHover = powerHover;
                     comboList(i).powerMax = powerMax;
