@@ -12,6 +12,7 @@ classdef Parameters
         SelectBattCellNo
         BattCellNo_Desired
         mass_NoDrive_Est
+        mass_NoDrive_NoPayload_Est
         mass_Combo_Est
         DisplayResults
         ThrustWeightRatio

@@ -14,7 +14,7 @@ function output = multirotorSizingAlgorithm(p)
         elseif RotorNo == 6 && Coaxial == false || RotorNo == 12 && Coaxial == true
             PropDiameter_Max = p.Wheelbase/2;
         elseif RotorNo == 8 && Coaxial == false || RotorNo == 16 && Coaxial == true
-            PropDiametter_Max = P.Wheelbase*sin(pi/8);
+            PropDiameter_Max = p.Wheelbase*sin(pi/8);
         else
             disp('Problem with Wheelbase calculation; using PropDiameter_Max');
             PropDiameter_Max = p.PropDiameter_Max;
@@ -23,6 +23,12 @@ function output = multirotorSizingAlgorithm(p)
         PropDiameter_Max = p.PropDiameter_Max;
     end
     
+    if p.useOverlap
+        r = sym('r');
+        distanceBetween = PropDiameter_Max
+        PropDiameter_Max = vpasolve(p.Overlap == 1/pi*(2*acos(PropDiameter_Max/r)-sin(2*acos(PropDiameter_Max/r))), r, PropDiameter_Max*(1 + p.Overlap));
+        PropDiameter_Max = round(double(PropDiameter_Max), 3)
+    end
     SafetyFactor = 1.00; % [1-2], arbitrary safety parameter
     
     % Battery Specs
@@ -43,7 +49,12 @@ function output = multirotorSizingAlgorithm(p)
     comboList = loadComboList();
     filteredComboList = filterComboList(comboList, PropDiameter_Min, PropDiameter_Max,...
         mass_Combo_Est*2); % Take up to 200% combo mass
-
+    
+    if isempty(filteredComboList)
+        disp(['Empty Combo List for ' num2str(BattCapacity_Wh) ' Watt Hours.']);
+        output = {0 0 0 mass_Total_Est p.Wh};
+        return
+    end
     %% Get Operating Points
     if Coaxial
         thrustHover_Est = 1/0.85*mass_Total_Est/RotorNo; % calculate thrust/motor required for hover
@@ -65,7 +76,7 @@ function output = multirotorSizingAlgorithm(p)
 
     if ~exist('comboChosen')
         disp(['No matching combination found for ' num2str(BattCapacity_Wh) ' Watt Hours.']);
-        output = {0 0 0 0 0};
+        output = {0 0 0 mass_Total_Est p.Wh};
         return
     end
 
