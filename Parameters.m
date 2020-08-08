@@ -16,6 +16,6 @@ classdef Parameters
         mass_Combo_Est
         DisplayResults
         ThrustWeightRatio
-        OptimisationGoal
+        OptimizationGoal
     end
 end

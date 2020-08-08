@@ -5,7 +5,7 @@ function output = multirotorSizingAlgorithm(p)
     %% User Parameters
     RotorNo = p.RotorNo;
     Coaxial = p.Coaxial;
-    OptimisationGoal = p.OptimisationGoal;
+    OptimizationGoal = p.OptimizationGoal;
     ThrustWeightRatio = p.ThrustWeightRatio;
     PropDiameter_Min = p.PropDiameter_Min;
     if p.useWheelbase
@@ -23,11 +23,10 @@ function output = multirotorSizingAlgorithm(p)
         PropDiameter_Max = p.PropDiameter_Max;
     end
     
-    if p.useOverlap
-        r = sym('r');
-        distanceBetween = PropDiameter_Max
-        PropDiameter_Max = vpasolve(p.Overlap == 1/pi*(2*acos(PropDiameter_Max/r)-sin(2*acos(PropDiameter_Max/r))), r, PropDiameter_Max*(1 + p.Overlap));
-        PropDiameter_Max = round(double(PropDiameter_Max), 3)
+    if p.useOverlap % Use the numeric solver
+        d = sym('d');
+        PropDiameter_Max = vpasolve(p.Overlap == 1/pi*(2*acos(PropDiameter_Max/d)-sin(2*acos(PropDiameter_Max/d))), d, PropDiameter_Max*(1 + p.Overlap));
+        PropDiameter_Max = round(double(PropDiameter_Max), 3);
     end
     SafetyFactor = 1.00; % [1-2], arbitrary safety parameter
     
@@ -74,15 +73,15 @@ function output = multirotorSizingAlgorithm(p)
         end
     end
 
-    if ~exist('comboChosen')
+    if ~exist('comboChosen','var')
         disp(['No matching combination found for ' num2str(BattCapacity_Wh) ' Watt Hours.']);
         output = {0 0 0 mass_Total_Est p.Wh};
         return
     end
 
     %% Determine battery specification, total mass
-    BattCellVoltage = 3.7; % V per cell, battery cell voltage
-    BattCellNo = round(comboChosen.voltage/3.85); %TODO: FIX THE 3.85
+    BattCellVoltage = 3.7; % V per cell
+    BattCellNo = roundBatteryCellNo(comboChosen.voltage/3.7); % Round to the nearest even number
     BattVoltageSagConstant = 0.5/0.8*BattCellNo;
     BattCapacity_Ah = BattCapacity_Wh/(BattCellNo*3.7);
     minBattRating = comboChosen.powerMax/comboChosen.voltage*RotorNo*SafetyFactor/BattCapacity_Ah;
@@ -92,7 +91,7 @@ function output = multirotorSizingAlgorithm(p)
     mass_Total = mass_NoDrive_Est + RotorNo*comboChosen.massCombined + mass_Battery_Total;
 
     %% Calculate initial battery state
-    voltage_hover(1) = BattCellNo*4.2; % %TODO: DO something with that 3.85; 4.2 V per cell times number of cells
+    voltage_hover(1) = BattCellNo*4.2;
     voltage_max(1) = BattCellNo*4.2;
     current_hover(1) = comboChosen.powerHover/voltage_hover(1)*RotorNo; % calculate total current at hover
     current_max(1) = comboChosen.powerMax/voltage_max(1)*RotorNo; % calculate total current at WOT
@@ -126,27 +125,22 @@ function output = multirotorSizingAlgorithm(p)
     if p.DisplayResults == true
         disp(['For a ' num2str(RotorNo) '-rotor drone with estimated AUM of ' num2str(round(mass_Total_Est)) ' g (calculated TOM of ' num2str(round(mass_Total)) ' g):']);
 
-        switch OptimisationGoal
+        switch OptimizationGoal
             case 'hover'
-                textOptimisation = ['the highest specific thrust of ' num2str(round(comboChosen.thrustHover/comboChosen.powerHover*100)/100)  ' gf/W per motor at hover.'];
+                textOptimization = ['the highest specific thrust of ' num2str(round(comboChosen.thrustHover/comboChosen.powerHover*100)/100)  ' gf/W per motor at hover.'];
             case 'max'
-                textOptimisation = ['the highest specific thrust of ' num2str(round(propChosen.OPmax(2)/powerChosen.powerMax*100)/100)  ' gf/W per motor at WOT.'];
-            case 'utilisation'
-                textOptimisation = 'maximum usable power range of propeller';
+                textOptimization = ['the highest specific thrust of ' num2str(round(propChosen.OPmax(2)/powerChosen.powerMax*100)/100)  ' gf/W per motor at WOT.'];
+            case 'utilization'
+                textOptimization = 'maximum usable power range of propeller';
             otherwise
-                error('ERROR! Wrong optimisation criteria!');
+                error('ERROR! Wrong optimization criteria!');
         end
 
-        disp(['The ' comboChosen.propName ' propeller should be chosen for ' textOptimisation]);
+        disp(['The ' comboChosen.propName ' propeller should be chosen for ' textOptimization]);
         disp(['The ' comboChosen.motorName ' motor should be selected, controlled by a ' num2str(ceil(comboChosen.currentRating)) ' A ESC per motor.']);
         disp(['One motor uses ' num2str(round(comboChosen.powerHover)) ' W of electrical power at hover and ' num2str(round(comboChosen.powerMax)) ' W of electrical power at WOT.']);
         disp(['The whole system should be powered by ' num2str(BattCellNo) 'S ' num2str(ceil(minBattRating)) 'C LiPo batteries of '...
-            num2str(round(BattCapacity_Ah*1000, -3)) ' mAh.']);
-
-%         disp(['Hovering flight requires ' num2str(round(RotorNo*comboChosen.powerHover)) ' W of mechanical power (' 'TORQUE'...
-%             ' Nm at ' num2str(round(comboChosen.speedHover/100)*100) ' RPM) to achieve ' num2str(round(comboChosen.thrustHover*RotorNo)) ' gf of total thrust.']);
-%         disp(['WOT flight requires ' num2str(round(RotorNo*comboChosen.powerMax)) ' W of mechanical power (' 'TORQUE'...
-%             ' Nm at ' num2str(round(comboChosen.speedMax/100)*100) ' RPM) to achieve ' num2str(round(comboChosen.thrustMax*RotorNo)) ' gf of total thrust.']);
+            num2str(round(BattCapacity_Ah*1000, -3)) ' mAh (having a mass of about ' num2str(mass_Battery_Total/1000) ' kg).']);
         disp(['This configuration should achieve around ' num2str(round(time_hover(end)*60)) ' min of hover and around ' num2str(round(time_max(end)*60)) ' min of flight at WOT.']);
         disp('---------');
 
@@ -154,10 +148,10 @@ function output = multirotorSizingAlgorithm(p)
 
     function filteredComboList = filterComboList(comboList, PDmin, PDmax, Mmax)
         filteredComboList = [];
-        for i = 1:size(comboList,2)
-            if comboList(i).propDiameter <= PDmax && comboList(i).propDiameter...
-                    >= PDmin && comboList(i).massCombined <= Mmax
-                filteredComboList = [filteredComboList, comboList(i)];
+        for k = 1:size(comboList,2)
+            if comboList(k).propDiameter <= PDmax && comboList(k).propDiameter...
+                    >= PDmin && comboList(k).massCombined <= Mmax
+                filteredComboList = [filteredComboList, comboList(k)];
             end
         end
     end

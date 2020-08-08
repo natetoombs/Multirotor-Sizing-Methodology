@@ -1,3 +1,6 @@
+% Class for each motor/propeller combination. Includes operating points as
+% well.
+
 classdef Combo
     properties
         motorName

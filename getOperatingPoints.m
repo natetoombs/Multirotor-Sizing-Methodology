@@ -1,4 +1,11 @@
-% 
+% For a given combo list, each combo has data loaded from loadSpecCurves.m
+% If there are multiple instances of a combo in the data, the specs
+% variable will have a data instance for each. Only the data instance with
+% the lowest power at hover will be kept with the combo.
+%
+% The interpolations contain data from 0 to 100% throttle.
+%
+% output = comboOPList array (see Combo.m)
 
 function comboOPList = getOperatingPoints(comboList, thrustHover, thrustMax, BattCellNo)
     for i = 1:size(comboList,2)
@@ -9,11 +16,9 @@ function comboOPList = getOperatingPoints(comboList, thrustHover, thrustMax, Bat
             speedMax = interp1(specs(j).Thrust, specs(j).RPM, thrustMax);
             speedLimit = comboList(i).speedLimit;
             if speedMax <= speedLimit
-                thrustLimit = interp1(specs(j).RPM, specs(j).Thrust, speedLimit);
                 powerHover = interp1(specs(j).RPM, specs(j).Power, speedHover); % Eq. (13)
                 powerMax = interp1(specs(j).RPM, specs(j).Power, speedMax);
-                powerLimit = interp1(specs(j).RPM, specs(j).Power, speedLimit);
-                if powerHover < powerHover_prev && (BattCellNo == 0 || BattCellNo == round(specs(j).Voltage/3.85))
+                if powerHover < powerHover_prev && (BattCellNo == 0 || BattCellNo == roundBatteryCellNo(specs(j).Voltage/3.7))
                     powerHover_prev = powerHover;
                     comboList(i).powerHover = powerHover;
                     comboList(i).powerMax = powerMax;
