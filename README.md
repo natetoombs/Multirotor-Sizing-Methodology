@@ -1,5 +1,5 @@
 # Multirotor Sizing Methodology
-By Nathan Toombs. Based on the repository for the article "Multirotor Sizing Methodology with Flight Time Estimation", with credit to M. Biczyski, R. Sehab, G.Krebs, J.F. Whidborne, P. Luk
+By Nathan Toombs. Based on the repository for the article "Multirotor Sizing Methodology with Flight Time Estimation", with credit to M. Biczyski, R. Sehab, G.Krebs, J.F. Whidborne, P. Luk (https://github.com/mbiczyski/Multirotor-Sizing-Methodology)
 
 Files created and validated using Matlab 2018a
 
