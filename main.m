@@ -26,16 +26,16 @@ format compact; format shortG;
 % Set Params
 params = Parameters();
 params.RotorNo = 8; % Number of Rotors
-params.Coaxial = true; % Coaxial motors have 15% loss %TODO: Cite
+params.Coaxial = true; % Coaxial motors can have about 15% loss
 params.useWheelbase = false; % Use wheelbase to determine max prop size;
                     % works with 4,6,8-rotor, and coaxial 8,12,16-rotor
-params.Wheelbase = 1700/25.41; % in; Diagonal from motor to motor %TODO: include math in paper
+params.Wheelbase = 1700/25.41; % in; Diagonal from motor to motor
 params.useOverlap = true; % Allow props to overlap;
-params.Overlap = 0.1; % percent; 15% is max recommended, and 39% will have the props overlap adjacent motors %TODO cite paper
+params.Overlap = 0.1; % percent; 15% is max recommended, and 39% will have the props overlap adjacent motors
 params.PropDiameter_Min = 20; % in; Smallest size that will be searched
 params.PropDiameter_Max = 16.971; % in % Largest size; IGNORED if useWheelbase
 params.DisplayResults = true; % Print results at the end of the function
-params.SelectBattCellNo = false; % If you want to specify the cell #
+params.SelectBattCellNo = false; % If you want to specify the cell
 params.BattCellNo_Desired = 0; % Must be even; IGNORED if SelectBattCellNo == false
 params.ThrustWeightRatio = 1.65;
                     % 1.65 - hover throttle = 60% thrust; poor wind flight
