@@ -10,7 +10,12 @@ battery_min = battery_info(1);
 battery_step = battery_info(2);
 battery_max = battery_info(3);
 
+num_plots = size(payload_min:payload_step:payload_max,2);
+m = ceil(sqrt(num_plots));
+n = ceil(num_plots/m);
+
 fig_num = 1;
+figure(1); clf; hold on
 j = 1;
 for payload = payload_min:payload_step:payload_max
     mass_Payload = payload;
@@ -27,13 +32,12 @@ for payload = payload_min:payload_step:payload_max
         hover_list = [hover_list, data{i,j}{2}];
         max_list = [max_list, data{i,j}{3}];
         mass_list = [mass_list, data{i,j}{4}/1000];
-    %     [num2str(wh),' ',data{j}{1}.motorName,' ',data{j}{1}.propName]
         i = i + 1;
     end
 
     output = data;
     
-    figure(fig_num); clf; hold on
+    subplot(n,m,j); hold on
     title(['Flight with ' num2str(payload) 'g Payload'])
     plot(wh_list, hover_list)
     plot(wh_list, max_list)
