@@ -50,7 +50,11 @@ mass_Frame = 400;
 mass_Computer = 100; % TX2
 mass_FC = 20;
 mass_Sensors = 75 + 10; % Intel D435i Camera, Sonar
+<<<<<<< HEAD
 mass_Payload = 1000; % 22500g = 50lbs
+=======
+mass_Payload = 0; % 22500g = 50lbs
+>>>>>>> 9e7a2e366f19035bbe84c9ebdfca693a8e7679e5
 mass_Power_System = 68 + 12 + 100; % Boost Converter, UBEC, cables
 mass_Other = 150; % Cables, other things
 mass_ESC_Est = 50; % KDEXF-UAS35
@@ -68,7 +72,11 @@ params.mass_Combo_Est = mass_Motor_Est + mass_Propeller_Est;
 params.Wh = 80; % 4s 5200 mAh
 
 % Choose Optimization Method
+<<<<<<< HEAD
 method = 'iterateBattery';
+=======
+method = 'iteratePayloadAndBattery';
+>>>>>>> 9e7a2e366f19035bbe84c9ebdfca693a8e7679e5
         % 'singleRun' -- Define the battery and payload, run once
         % 'iterateBattery' -- Define a battery range and iterate
         % 'iteratePayload' -- Define a payload range and iterate
@@ -79,9 +87,15 @@ if isequal(method,'singleRun')
     data = multirotorSizingAlgorithm(params);
 elseif isequal(method,'iterateBattery')
     % Uses above defined payload
+<<<<<<< HEAD
     battery_min = 200;
     battery_step = 50;
     battery_max = 600;
+=======
+    battery_min = 3000;
+    battery_step = 250;
+    battery_max = 8000;
+>>>>>>> 9e7a2e366f19035bbe84c9ebdfca693a8e7679e5
     battery_info = [battery_min, battery_step, battery_max];
     data = iterateBattery(params, battery_info);
 elseif isequal(method,'iteratePayload')
