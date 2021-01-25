@@ -39,7 +39,8 @@ function output = loadSpecCurves(combo)
                     end
                     ii = ii + 1;
                 end
-                % If there isn't a row of 0's, add one
+                % If there isn't a row of 0's, add one so we don't
+                % extrapolate
                 if isempty(find(data.RPM == 0,1))
                     data.Power = [0; data.Power];
                     data.Thrust = [0; data.Thrust];

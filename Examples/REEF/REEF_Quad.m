@@ -13,7 +13,7 @@ params.RotorNo = 4; % Number of Rotors
 params.Coaxial = false; % Coaxial motors have 15% loss
 params.useWheelbase = false; % Use wheelbase to determine max prop size;
                     % works with 4,6,8-rotor, and coaxial 8,12,16-rotor
-params.Wheelbase = 650/25.41; % in; Diagonal from motor to motor
+params.Wheelbase = 550/25.41; % in; Diagonal from motor to motor
 params.useOverlap = false; % Allow props to overlap;
 params.Overlap = 0.15; % percent; 15% is likely the max safe overlap
 params.PropDiameter_Min = 11; % in; Smallest size that will be searched
@@ -53,10 +53,10 @@ params.mass_NoDrive_Est = mass_Frame + mass_FC + mass_Sensors + mass_Payload + m
 params.mass_Combo_Est = mass_Motor_Est + mass_Propeller_Est;
 
 % Define Battery Power
-params.Wh = 520; % 8S 1800mah
+params.Wh = 250; % 8S 1800mah
 
 % Choose Optimization Method
-method = 'iterateBattery';
+method = 'singleRun';
         % 'singleRun' -- Define the battery and payload, run once
         % 'iterateBattery' -- Define a battery range and iterate
         % 'iteratePayloadAndBattery' -- Define ranges and iterate

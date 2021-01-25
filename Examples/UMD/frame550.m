@@ -29,52 +29,49 @@ params.RotorNo = 4; % Number of Rotors
 params.Coaxial = false; % Coaxial motors can have about 15% loss
 params.useWheelbase = true; % Use wheelbase to determine max prop size;
                     % works with 4,6,8-rotor, and coaxial 8,12,16-rotor
-params.Wheelbase = 1700/25.41; % in; Diagonal from motor to motor
-params.useOverlap = true; % Allow props to overlap;
+params.Wheelbase = 550/25.41; % in; Diagonal from motor to motor
+params.useOverlap = false; % Allow props to overlap;
 params.Overlap = 0.1; % percent; 15% is max recommended, and 39% will have the props overlap adjacent motors
-params.PropDiameter_Min = 10; % in; Smallest size that will be searched
-params.PropDiameter_Max = 16.971; % in % Largest size; IGNORED if useWheelbase
+params.PropDiameter_Min = 12; % in; Smallest size that will be searched
+params.PropDiameter_Max = 9; % in % Largest size; IGNORED if useWheelbase
 params.DisplayResults = true; % Print results at the end of the function
 params.SelectBattCellNo = false; % If you want to specify the cell
 params.BattCellNo_Desired = 0; % Must be even; IGNORED if SelectBattCellNo == false
-params.ThrustWeightRatio = 1.65;
+params.ThrustWeightRatio = 1.8;
                     % 1.65 - hover throttle = 60% thrust; poor wind flight
                     % 2 - minimum recommended; hover throttle = 50% thrust
-                    % 3 - payload transport
-                    % 4 - surveillence
-                    % 5+ - aerobatics / hi-speed video
-                    % 7+ - racing
 params.OptimizationGoal = 'hover';
                     % hover - best specific thrust (g/W) at hover
                     % max - best specific thrust (g/W) at 100% throttle
                     % utilization - maximum usable power range of propeller
 
 % Determine Mass before Motor, Propeller, & Battery [g]
-mass_Frame = 2000;
-mass_Computer = 300; % Intel NUC
+mass_Frame = 400;
+mass_Computer = 100; % TX2
 mass_FC = 20;
-mass_Sensors = 500 + 10; % Camera, Sonar
+mass_Sensors = 75 + 10; % Intel D435i Camera, Sonar
 mass_Payload = 1000; % 22500g = 50lbs
 mass_Power_System = 68 + 12 + 100; % Boost Converter, UBEC, cables
-mass_Other = 200; % Cables, other things
-mass_ESC_Est = 32; % 30A 
+mass_Other = 150; % Cables, other things
+mass_ESC_Est = 50; % KDEXF-UAS35
 
 % Estimate Motor & Propeller Mass; algorithm will search for combinations
 % up to 200% their mass [g]
-mass_Motor_Est = 1300;
-mass_Propeller_Est = 200;
+mass_Motor_Est = 100;
+mass_Propeller_Est = 20;
 
 params.mass_NoDrive_NoPayload_Est = mass_Frame + mass_FC + mass_Sensors + mass_Power_System + mass_Other + mass_ESC_Est*params.RotorNo;
 params.mass_NoDrive_Est = mass_Frame + mass_FC + mass_Sensors + mass_Payload + mass_Power_System + mass_Other + mass_ESC_Est*params.RotorNo;
 params.mass_Combo_Est = mass_Motor_Est + mass_Propeller_Est;
 
 % Define Battery Power
-params.Wh = 2000;
+params.Wh = 80; % 4s 5200 mAh
 
 % Choose Optimization Method
-method = 'iteratePayloadAndBattery';
+method = 'iterateBattery';
         % 'singleRun' -- Define the battery and payload, run once
         % 'iterateBattery' -- Define a battery range and iterate
+        % 'iteratePayload' -- Define a payload range and iterate
         % 'iteratePayloadAndBattery' -- Define ranges and iterate
         
 if isequal(method,'singleRun')
@@ -82,19 +79,25 @@ if isequal(method,'singleRun')
     data = multirotorSizingAlgorithm(params);
 elseif isequal(method,'iterateBattery')
     % Uses above defined payload
-    battery_min = 3000;
-    battery_step = 250;
-    battery_max = 8000;
+    battery_min = 200;
+    battery_step = 50;
+    battery_max = 600;
     battery_info = [battery_min, battery_step, battery_max];
     data = iterateBattery(params, battery_info);
-elseif isequal(method,'iteratePayloadAndBattery')
-    payload_min = 1150;
-    payload_step = 5000;
-    payload_max = 2250;
+elseif isequal(method,'iteratePayload')
+    payload_min = 0;
+    payload_step = 125;
+    payload_max = 1500;
     payload_info = [payload_min, payload_step, payload_max];
-    battery_min = 1200;
+    data = iteratePayload(params, payload_info);
+elseif isequal(method,'iteratePayloadAndBattery')
+    payload_min = 2500;
+    payload_step = 500;
+    payload_max = 4000;
+    payload_info = [payload_min, payload_step, payload_max];
+    battery_min = 100;
     battery_step = 20;
-    battery_max = 2000;
+    battery_max = 200;
     battery_info = [battery_min, battery_step, battery_max];
     data = iteratePayloadAndBattery(params, payload_info, battery_info);
 else
