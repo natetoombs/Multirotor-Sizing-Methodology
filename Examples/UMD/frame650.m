@@ -46,11 +46,11 @@ params.OptimizationGoal = 'hover';
                     % utilization - maximum usable power range of propeller
 
 % Determine Mass before Motor, Propeller, & Battery [g]
-mass_Frame = 550;
+mass_Frame = 500;
 mass_Computer = 100; % TX2
 mass_FC = 20;
 mass_Sensors = 75 + 10; % Intel D435i Camera, Sonar
-mass_Payload = 0; % 22500g = 50lbs
+mass_Payload = 1200; % 22500g = 50lbs
 mass_Power_System = 68 + 12 + 100; % Boost Converter, UBEC, cables
 mass_Other = 200; % Cables, other things
 mass_ESC_Est = 50; % KDEXF-UAS35
@@ -68,7 +68,7 @@ params.mass_Combo_Est = mass_Motor_Est + mass_Propeller_Est;
 params.Wh = 80; % 4s 5200 mAh
 
 % Choose Optimization Method
-method = 'iteratePayloadAndBattery';
+method = 'iterateBattery';
         % 'singleRun' -- Define the battery and payload, run once
         % 'iterateBattery' -- Define a battery range and iterate
         % 'iteratePayload' -- Define a payload range and iterate
@@ -79,9 +79,9 @@ if isequal(method,'singleRun')
     data = multirotorSizingAlgorithm(params);
 elseif isequal(method,'iterateBattery')
     % Uses above defined payload
-    battery_min = 3000;
-    battery_step = 250;
-    battery_max = 8000;
+    battery_min = 200;
+    battery_step = 50;
+    battery_max = 800;
     battery_info = [battery_min, battery_step, battery_max];
     data = iterateBattery(params, battery_info);
 elseif isequal(method,'iteratePayload')

@@ -28,7 +28,7 @@ end
 output = data;
 
 figure(1); clf; hold on
-title(['Flight with Increasing Battery Size'])
+title(['Flight Time with Increasing Battery Size'])
 plot(wh_list, hover_list)
 plot(wh_list, max_list)
 xlabel('Battery Capacity (Wh)')
